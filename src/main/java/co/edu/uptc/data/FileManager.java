@@ -1,6 +1,6 @@
 package co.edu.uptc.data;
 
-import co.edu.uptc.doubleList.DoubleList;
+import co.edu.uptc.doubleList.*;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -19,9 +19,9 @@ public class FileManager {
 
     public DoubleList<String> readFile(){
         File file = new File(filePath);
-        if (!file.exists()){
-            createExternalFile();
-        }
+
+        if (!file.exists()) createExternalFile();
+
         try(FileInputStream input = new FileInputStream(file)) {
             BufferedReader br = new BufferedReader(new InputStreamReader(input));
             String line;
@@ -40,15 +40,14 @@ public class FileManager {
     }
 
     private void createExternalFile() {
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream(filePath)){
+        try (InputStream input = FileManager.class.getClassLoader().getResourceAsStream(filePath)){
 
             Path out = Path.of(filePath);
-            Path carpetaDestino = destino.getParent();
+            Path outDirectory = out.getParent();
 
-            if (carpetaDestino != null) {
-                Files.createDirectories(carpetaDestino);
-            }
-            Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING));
+            if (Files.notExists(outDirectory)) Files.createDirectories(outDirectory);
+
+            Files.copy(input, out, StandardCopyOption.REPLACE_EXISTING);
 
         }catch (Exception e){
 
